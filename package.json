@@ -1,0 +1,8 @@
+{
+  "name": "nlw_beginner",
+  "description": "This project is from NLW - Rocketseat beginner trail.",
+  "main": "index.js",
+  "dependencies": {
+    "inquirer": "^10.2.2"
+  }
+}
