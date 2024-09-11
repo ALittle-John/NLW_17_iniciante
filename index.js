@@ -49,8 +49,28 @@ const marcarMetas = async () => {
   })
 }
 
+const metasRealizadas = async () => {
+  const realizadas = metas.filter((meta) => {
+    // filter() -> Sempre que o retorno for verdadeiro, vai armazenar o achado na variável.
+    return meta.checked
+    // Se o checked está como true, quarda na variável.
+  })
+
+  if (realizadas.length == 0) {
+    console.log('Não há metas realizadas')
+    return
+  }
+
+  await select({
+    message: "Metas realizadas",
+    choices: [...realizadas]
+  })
+}
+
 const start = async () => {
   while (true) {
+    // while gera um funcionamento constante de algo (nesse caso o menu) até a parada forçada, break ou return.
+    // Declaração de "let opcao" dentro de while permite que o valor da mesma seja atualizada em toda interação com o menu.
     let opcao = await select({
       message: "Menu de atividades >",
       choices: [
@@ -61,6 +81,10 @@ const start = async () => {
         {
           name: "Marcar meta",
           value: "Marcar"
+        },
+        {
+          name: "Metas realizadas",
+          value: "Realizadas"
         },
         {
           name: "Sair do menu",
@@ -76,6 +100,9 @@ const start = async () => {
         break;
       case "Marcar":
         await marcarMetas();
+        break;
+      case "Realizadas":
+        await metasRealizadas();
         break;
 
       case "Sair":
