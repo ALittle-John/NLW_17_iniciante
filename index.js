@@ -85,6 +85,34 @@ const metasAbertas = async () => {
   })
 }
 
+const deletarMetas = async () => {
+  const metasDesmarcadas = metas.map((meta) => {
+    return {
+      value: meta.value,
+      checked: false
+    }
+  })
+
+  const escolhidasADeletar = await checkbox({
+    message: "Use as Setas para mudar onde deve ser selecionado, utilize a tecla de Espaço para marcar ou desmarcar e a tecla Enter para enviar as respostas.",
+    choices: [...metasDesmarcadas],
+    instructions: false
+  })
+
+  if (escolhidasADeletar.length == 0) {
+    console.log("Não há itens selecionados para deletar")
+    return
+  }
+
+  escolhidasADeletar.forEach((item) => {
+    naoDeletar = metas.filter((meta) => {
+      return meta.value != item
+    })
+  })
+
+  console.log(`Metas ${escolhidasADeletar} deletadas com sucesso!`)
+}
+
 const start = async () => {
   while (true) {
     // while gera um funcionamento constante de algo (nesse caso o menu) até a parada forçada, break ou return.
@@ -109,6 +137,10 @@ const start = async () => {
           value: "Abertas"
         },
         {
+          name: "Deletar metas",
+          value: "Deletar"
+        },
+        {
           name: "Sair do menu",
           value: "Sair"
         }
@@ -128,6 +160,9 @@ const start = async () => {
         break;
       case "Abertas":
         await metasAbertas();
+        break;
+      case "Deletar":
+        await deletarMetas();
         break;
 
       case "Sair":
