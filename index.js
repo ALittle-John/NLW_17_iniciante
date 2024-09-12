@@ -2,9 +2,27 @@
 // Não encontra "/prompts".
 
 const {select, input, checkbox} = require("@inquirer/prompts")
+const fs = require("fs").promises
 
 let mensagem = "App de metas iniciado"
-let metas = []
+// let metas = []
+let metas
+
+const carregarMetas = async () => {
+  try {
+    const dados = await fs.readFile("metas.json", "utf-8")
+    // "metas.json" já tem um array de objetos.
+    metas = JSON.parse(dados)
+    // o .parse() vai converter os "dados" que estão em JSON para um array
+  } catch (error) {
+    metas = []
+  }
+}
+
+const salvarMetas = async () => {
+  await fs.writeFile("metas.json", JSON.stringify(metas, null, 2))
+  // JSON.stringify() -> transforma o array de "metas" em um objeto JSON
+}
 
 const cadastrarMetas = async () => {
   let meta = await input({message: "Digite uma meta: "})
@@ -21,10 +39,14 @@ const cadastrarMetas = async () => {
   mensagem = `Meta "${meta}" cadastrada com sucesso`
 }
 
-const marcarMetas = async () => {
+const listarMetas = async () => {
+  if (metas.length == 0) {
+    mensagem = "Não há item na lista de metas"
+  }
+
   // respostas -> ["...", "...", "..."]. checkbox() retorna um array de strings.
   const respostas = await checkbox({
-    message: "Use as Setas para mudar onde deve ser selecionado, utilize a tecla de Espaço para marcar ou desmarcar e a tecla Enter para enviar as respostas.",
+    message: "Use as Setas para mudar onde deve ser selecionado, utilize a tecla de Espaço para marcar como concluido ou desmarcar e a tecla Enter para enviar as respostas.",
     choices: [...metas],
     instructions: false
   })
@@ -55,6 +77,11 @@ const marcarMetas = async () => {
 }
 
 const metasRealizadas = async () => {
+  if (metas.length == 0) {
+    mensagem = "Não há item na lista de metas"
+    return
+  }
+
   const realizadas = metas.filter((meta) => {
     // filter() -> Sempre que o retorno for verdadeiro, vai armazenar o achado na variável.
     return meta.checked
@@ -73,8 +100,13 @@ const metasRealizadas = async () => {
 }
 
 const metasAbertas = async () => {
+  if (metas.length == 0) {
+    mensagem = "Não há item na lista de metas"
+    return
+  }
+
   const abertas = metas.filter((meta) => {
-    return meta.checked != true
+    return !meta.checked
     // Se o checked está como false, quarda na variável.
   })
 
@@ -90,6 +122,11 @@ const metasAbertas = async () => {
 }
 
 const deletarMetas = async () => {
+  if (metas.length == 0) {
+    mensagem = "Não há item na lista de metas"
+    return
+  }
+
   const metasDesmarcadas = metas.map((meta) => {
     return {
       value: meta.value,
@@ -127,8 +164,11 @@ const mostrarMensagem = () => {
 }
 
 const start = async () => {
+  await carregarMetas()
+
   while (true) {
     mostrarMensagem()
+    await salvarMetas()
     // while gera um funcionamento constante de algo (nesse caso o menu) até a parada forçada, break ou return.
     // Declaração de "let opcao" dentro de while permite que o valor da mesma seja atualizada em toda interação com o menu.
     let opcao = await select({
@@ -139,8 +179,8 @@ const start = async () => {
           value: "Cadastrar"
         },
         {
-          name: "Marcar meta",
-          value: "Marcar"
+          name: "Listar meta",
+          value: "Listar"
         },
         {
           name: "Metas realizadas",
@@ -164,9 +204,10 @@ const start = async () => {
     switch (opcao) {
       case "Cadastrar":
         await cadastrarMetas();
+        // await salvarMetas()
         break;
-      case "Marcar":
-        await marcarMetas();
+      case "Listar":
+        await listarMetas();
         break;
       case "Realizadas":
         await metasRealizadas();
