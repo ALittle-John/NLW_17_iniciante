@@ -42,6 +42,7 @@ const cadastrarMetas = async () => {
 const listarMetas = async () => {
   if (metas.length == 0) {
     mensagem = "Não há item na lista de metas"
+    return
   }
 
   // respostas -> ["...", "...", "..."]. checkbox() retorna um array de strings.
