@@ -3,12 +3,13 @@
 
 const {select, input, checkbox} = require("@inquirer/prompts")
 
+let mensagem = "App de metas iniciado"
 let metas = []
 
 const cadastrarMetas = async () => {
   let meta = await input({message: "Digite uma meta: "})
   if (meta.length == 0) {
-    console.log("A meta não pode ser vazia")
+    mensagem = "A meta não pode ser vazia"
     return
   }
 
@@ -16,6 +17,8 @@ const cadastrarMetas = async () => {
     value: meta,
     checked: false
   })
+
+  mensagem = `Meta "${meta}" cadastrada com sucesso`
 }
 
 const marcarMetas = async () => {
@@ -34,7 +37,7 @@ const marcarMetas = async () => {
   // ao desmarcar, checked será marcado como false e sairá da lista de respostas.
 
   if (respostas.length == 0) {
-    console.log("Nenhuma escolha foi feita")
+    mensagem = "Nenhuma escolha foi feita"
     return
   }
 
@@ -47,7 +50,8 @@ const marcarMetas = async () => {
       // precisava de uma maneira de acessar o objeto correto equivalente.
     })
       metaEscolhida.checked = true
-  })
+    })
+    mensagem = `Foi marcado a(s) metas(s): ${respostas}`
 }
 
 const metasRealizadas = async () => {
@@ -58,29 +62,29 @@ const metasRealizadas = async () => {
   })
 
   if (realizadas.length == 0) {
-    console.log('Não há metas realizadas')
+    mensagem = 'Não há metas realizadas'
     return
   }
 
   await select({
-    message: "Metas realizadas: " + metasRealizadas.length,
+    message: "Metas realizadas: " + realizadas.length,
     choices: [...realizadas]
   })
 }
 
 const metasAbertas = async () => {
   const abertas = metas.filter((meta) => {
-    return !meta.checked
+    return meta.checked != true
     // Se o checked está como false, quarda na variável.
   })
 
   if (abertas.length == 0) {
-    console.log('Não há metas abertas')
+    mensagem = 'Não há metas abertas'
     return
   }
 
   await select({
-    message: "Metas abertas: " + metasAbertas.length,
+    message: "Metas abertas: " + abertas.length,
     choices: [...abertas]
   })
 }
@@ -100,7 +104,7 @@ const deletarMetas = async () => {
   })
 
   if (escolhidasADeletar.length == 0) {
-    console.log("Não há itens selecionados para deletar")
+    mensagem = "Não há itens selecionados para deletar"
     return
   }
 
@@ -109,12 +113,22 @@ const deletarMetas = async () => {
       return meta.value != item
     })
   })
+  mensagem = `Metas ${escolhidasADeletar} deletadas com sucesso!`
+}
 
-  console.log(`Metas ${escolhidasADeletar} deletadas com sucesso!`)
+const mostrarMensagem = () => {
+  console.clear()
+
+  if (mensagem != "") {
+    console.log(mensagem)
+    console.log("")
+    mensagem = ""
+  }
 }
 
 const start = async () => {
   while (true) {
+    mostrarMensagem()
     // while gera um funcionamento constante de algo (nesse caso o menu) até a parada forçada, break ou return.
     // Declaração de "let opcao" dentro de while permite que o valor da mesma seja atualizada em toda interação com o menu.
     let opcao = await select({
@@ -150,7 +164,6 @@ const start = async () => {
     switch (opcao) {
       case "Cadastrar":
         await cadastrarMetas();
-        console.log(metas)
         break;
       case "Marcar":
         await marcarMetas();
