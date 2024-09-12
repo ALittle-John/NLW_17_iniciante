@@ -25,10 +25,6 @@ const marcarMetas = async () => {
     choices: [...metas],
     instructions: false
   })
-  if (respostas.length == 0) {
-    console.log("Nenhuma escolha foi feita")
-    return
-  }
 
   metas.forEach((meta) => {
     meta.checked = false
@@ -36,6 +32,11 @@ const marcarMetas = async () => {
   // Por padrão os checked de "metas" estarão como false. Desmarcar totas as metas, garante que apenas as metas selecionadas estarão marcadas no final.
   // Se mandar marcar novamente sem sair da sessão, o array de respostas ainda manterá as respostas marcadas anteriormente, assim mantendo o checked como true, enquanto,
   // ao desmarcar, checked será marcado como false e sairá da lista de respostas.
+
+  if (respostas.length == 0) {
+    console.log("Nenhuma escolha foi feita")
+    return
+  }
 
   respostas.forEach((resposta) => {
     // metas -> [{...}, {...}, {...}]. find entre os valores das "metas" e "resposta".
