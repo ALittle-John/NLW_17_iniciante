@@ -147,11 +147,20 @@ const deletarMetas = async () => {
   }
 
   escolhidasADeletar.forEach((item) => {
-    naoDeletar = metas.filter((meta) => {
+    metas = metas.filter((meta) => {
       return meta.value != item
     })
+    // Remove da lista de metas os escolhidos a deletar.
   })
-  mensagem = `Metas ${escolhidasADeletar} deletadas com sucesso!`
+
+// Outra forma
+//   metas = metas.filter((meta) => !escolhidasADeletar.includes(meta.value))
+//   try {
+//     await fs.writeFile("metas.json", JSON.stringify(metas, null, 2))
+//     mensagem = `Meta(s) ${escolhidasADeletar} deletada(s) com sucesso!`
+//   } catch (error) {
+//     mensagem = "Erro ao tentar salvar as metas pós deleção."
+//   }
 }
 
 const mostrarMensagem = () => {
